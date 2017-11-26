@@ -1,6 +1,5 @@
 
 use std::ops::Range;
-use termion::color;
 
 pub enum TileStyle {
     RockHigh,
@@ -17,22 +16,6 @@ pub enum TileStyle {
 pub struct Coord {
     pub x: isize,
     pub y: isize,
-}
-
-pub struct TermTile {
-    pub colour_bg: color::Bg<color::Rgb>,
-    pub colour_fg: color::Fg<color::Rgb>,
-    pub char_gen: (fn(f32, f32) -> char),
-}
-
-impl TermTile {
-    pub fn new(colour_bg: [u8; 3], colour_fg: [u8; 3], char_gen: (fn(f32, f32) -> char)) -> TermTile {
-        TermTile {
-            colour_bg: color::Bg(color::Rgb(colour_bg[0], colour_bg[1], colour_bg[2])),
-            colour_fg: color::Fg(color::Rgb(colour_fg[0], colour_fg[1], colour_fg[2])),
-            char_gen: char_gen
-        }
-    }
 }
 
 pub struct Tile {
