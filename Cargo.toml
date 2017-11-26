@@ -1,0 +1,9 @@
+[package]
+name = "flock"
+version = "0.1.0"
+authors = ["Andy Green <hello@andygrn.co.uk>"]
+
+[dependencies]
+termion = "1"
+rand = "0.3"
+noise = "0.4"
