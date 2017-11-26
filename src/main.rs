@@ -47,7 +47,7 @@ fn main() {
     thread::spawn(move || {
 
         const VIEW_PADDING: usize = 10;
-        let frame_sleep = time::Duration::from_millis(64);
+        let frame_sleep = time::Duration::from_millis(64); // ~15 fps
 
         let material_rock_high = TermTile::new([107, 103, 98], [117, 113, 107], |offset, _rand| {
             if offset > 0.8 { '#' } else if offset > 0.6 { '%' } else if offset > 0.4 { '=' } else { ' ' }
@@ -187,11 +187,6 @@ fn main() {
         for c in stdin.by_ref().keys() {
             let mut player = player.lock().unwrap();
             match c.unwrap() {
-                // Exit.
-                // Key::Char('q') => break,
-                // Key::Char(c)   => println!("{}", c),
-                // Key::Alt(c)    => println!("Alt-{}", c),
-                // Key::Ctrl(c)   => println!("Ctrl-{}", c),
                 Key::Up | Key::Char('w') => {
                     if player.y == 0 {
                         break
