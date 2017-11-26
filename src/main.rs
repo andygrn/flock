@@ -1,28 +1,30 @@
+extern crate noise;
+extern crate termion;
+extern crate rand;
+
+mod tile;
+mod player;
+
 use std::io::{Write, Read};
 use std::{thread, time};
 
-extern crate termion;
 use termion::raw::IntoRawMode;
 use termion::{color, clear, style, cursor};
 use termion::event::Key;
 use termion::input::TermRead;
 
-extern crate rand;
 use rand::{thread_rng, Rng};
 
-extern crate noise;
 use noise::{NoiseModule, Seedable, Perlin, Add, ScaleBias, ScalePoint};
 
 use std::sync::{Arc, Mutex};
 
-mod tile;
 use tile::TileStyle;
 use tile::Tile;
 use tile::TileMap;
 use tile::TileMapView;
 use tile::TermTile;
 
-mod player;
 use player::Player;
 
 fn main() {
