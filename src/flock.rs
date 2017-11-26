@@ -43,17 +43,17 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
         Tile {
             x: x,
             y: y,
-            style: if tile_height > 0.5 {
+            style: if tile_height > 0.75 {
                 if rand.next_f32() > (((tile_height - 0.65) / 0.4) * 0.8) { TileStyle::RockLow } else { TileStyle::RockHigh }
-            } else if tile_height > 0.3 {
+            } else if tile_height > 0.55 {
                 TileStyle::Dirt
             } else if tile_height > -0.5 {
                 let tile_terrain = terrain.get(coord);
-                if tile_terrain > 0.5 {
+                if tile_terrain > 0.7 {
                     TileStyle::Dirt
                 } else {
                     let tile_vegetation = vegetation.get(coord);
-                    if tile_vegetation > 0.7 {
+                    if tile_vegetation > 0.6 {
                         if rand.next_f32() > 0.15 { TileStyle::GrassPlain } else { TileStyle::Tree }
                     } else if tile_vegetation > 0.5 {
                         if rand.next_f32() > 0.05 { TileStyle::GrassPlain } else { TileStyle::Tree }
