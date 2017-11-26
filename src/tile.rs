@@ -65,6 +65,14 @@ impl TileMap {
             }
         }
     }
+
+    pub fn get_tile(&self, x: usize, y: usize) -> Option<&Tile> {
+        let index = (y * self.width) + x;
+        if index > self.tiles.len() - 1 {
+            return None
+        }
+        Some(&self.tiles[index])
+    }
 }
 
 pub struct TileMapView {

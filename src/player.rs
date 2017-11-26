@@ -7,28 +7,16 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn try_north(&mut self) {
-        if self.y == 0 {
-            return
-        }
+    pub fn go_north(&mut self) {
         self.y -= 1;
     }
-    pub fn try_east(&mut self) {
-        if self.x == self.limit_x {
-            return
-        }
+    pub fn go_east(&mut self) {
         self.x += 1;
     }
-    pub fn try_south(&mut self) {
-        if self.y == self.limit_y {
-            return
-        }
+    pub fn go_south(&mut self) {
         self.y += 1;
     }
-    pub fn try_west(&mut self) {
-        if self.x == 0 {
-            return
-        }
+    pub fn go_west(&mut self) {
         self.x -= 1;
     }
 }

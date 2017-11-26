@@ -182,11 +182,59 @@ fn main() {
                 // Key::Char(c)   => println!("{}", c),
                 // Key::Alt(c)    => println!("Alt-{}", c),
                 // Key::Ctrl(c)   => println!("Ctrl-{}", c),
-                Key::Up    | Key::Char('w') => player.try_north(),
-                Key::Right | Key::Char('d') => player.try_east(),
-                Key::Down  | Key::Char('s') => player.try_south(),
-                Key::Left  | Key::Char('a') => player.try_west(),
-                _                           => break 'gameloop,
+                Key::Up | Key::Char('w') => {
+                    if player.y == 0 {
+                        break
+                    }
+                    let map = map.lock().unwrap();
+                    let target_tile = map.get_tile(player.x, player.y - 1);
+                    if let Some(tile) = target_tile {
+                        match tile.style {
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_north(),
+                            _ => {}
+                        }
+                    }
+                },
+                Key::Right | Key::Char('d') => {
+                    if player.x == player.limit_x {
+                        break
+                    }
+                    let map = map.lock().unwrap();
+                    let target_tile = map.get_tile(player.x + 1, player.y);
+                    if let Some(tile) = target_tile {
+                        match tile.style {
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_east(),
+                            _ => {}
+                        }
+                    }
+                },
+                Key::Down | Key::Char('s') => {
+                    if player.y == player.limit_y {
+                        break
+                    }
+                    let map = map.lock().unwrap();
+                    let target_tile = map.get_tile(player.x, player.y + 1);
+                    if let Some(tile) = target_tile {
+                        match tile.style {
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_south(),
+                            _ => {}
+                        }
+                    }
+                },
+                Key::Left | Key::Char('a') => {
+                    if player.x == 0 {
+                        break
+                    }
+                    let map = map.lock().unwrap();
+                    let target_tile = map.get_tile(player.x - 1, player.y);
+                    if let Some(tile) = target_tile {
+                        match tile.style {
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_west(),
+                            _ => {}
+                        }
+                    }
+                },
+                _ => break 'gameloop,
             }
             break;
         }
