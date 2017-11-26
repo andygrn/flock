@@ -99,13 +99,10 @@ impl TileMapView {
         ranges
     }
 
-    pub fn world_to_view_coord(&self, x: usize, y: usize) -> Option<Coord> {
+    pub fn world_to_view_coord(&self, x: usize, y: usize) -> Coord {
         let view_x: isize = x as isize - self.x as isize;
         let view_y: isize = y as isize - self.y as isize;
-        if view_x < 0 || view_y < 0 {
-            return None
-        }
-        Some(Coord{ x: view_x, y: view_y })
+        Coord{ x: view_x, y: view_y }
     }
 
     pub fn go_north(&mut self, steps: usize) {

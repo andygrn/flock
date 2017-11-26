@@ -102,18 +102,15 @@ fn main() {
             let map = map_render.lock().unwrap();
 
             let player_coord = view.world_to_view_coord(player.x, player.y);
-            if player_coord.is_some() {
-                let player_coord = player_coord.unwrap();
-                if player_coord.x < VIEW_PADDING as isize {
-                    view.go_west(1);
-                } else if player_coord.x > view.width as isize - VIEW_PADDING as isize {
-                    view.go_east(1);
-                }
-                if player_coord.y < VIEW_PADDING as isize {
-                    view.go_north(1);
-                } else if player_coord.y > view.height as isize - VIEW_PADDING as isize {
-                    view.go_south(1);
-                }
+            if player_coord.x < VIEW_PADDING as isize {
+                view.go_west(1);
+            } else if player_coord.x > view.width as isize - VIEW_PADDING as isize {
+                view.go_east(1);
+            }
+            if player_coord.y < VIEW_PADDING as isize {
+                view.go_north(1);
+            } else if player_coord.y > view.height as isize - VIEW_PADDING as isize {
+                view.go_south(1);
             }
 
             for (y, row) in view.get_tile_ranges().iter().enumerate() {
@@ -159,20 +156,16 @@ fn main() {
                 }
             }
 
-            let player_coord = view.world_to_view_coord(player.x, player.y);
-            if player_coord.is_some() {
-                let player_coord = player_coord.unwrap();
-                write!(
-                    stdout,
-                    "{}{}{}&",
-                    cursor::Goto(
-                        (player_coord.x + 1) as u16,
-                        (player_coord.y + 1) as u16
-                    ),
-                    color::Bg(color::Black),
-                    color::Fg(color::White)
-                ).unwrap();
-            }
+            write!(
+                stdout,
+                "{}{}{}&",
+                cursor::Goto(
+                    (player_coord.x + 1) as u16,
+                    (player_coord.y + 1) as u16
+                ),
+                color::Bg(color::Black),
+                color::Fg(color::White)
+            ).unwrap();
 
             stdout.flush().unwrap();
 
