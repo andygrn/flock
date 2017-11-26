@@ -97,77 +97,87 @@ fn main() {
             frame_counter %= 10;
 
             let stdout = std::io::stdout();
-            let mut stdout = stdout.lock();
-            let player = player_render.lock().unwrap();
-            let map = map_render.lock().unwrap();
 
-            let player_coord = view.world_to_view_coord(player.x, player.y);
-            if player_coord.x < VIEW_PADDING as isize {
-                view.go_west(1);
-            } else if player_coord.x > view.width as isize - VIEW_PADDING as isize {
-                view.go_east(1);
-            }
-            if player_coord.y < VIEW_PADDING as isize {
-                view.go_north(1);
-            } else if player_coord.y > view.height as isize - VIEW_PADDING as isize {
-                view.go_south(1);
-            }
-
-            for (y, row) in view.get_tile_ranges().iter().enumerate() {
-                for (x, tile) in map.tiles[row.start..row.end].iter().enumerate() {
-                    write!(
-                        stdout,
-                        "{}{}{}{}",
-                        cursor::Goto(x as u16 + 1, y as u16 + 1),
-                        match tile.style {
-                            TileStyle::RockHigh     => material_rock_high.colour_bg,
-                            TileStyle::RockLow      => material_rock_low.colour_bg,
-                            TileStyle::Dirt         => material_dirt.colour_bg,
-                            TileStyle::Tree         => material_tree.colour_bg,
-                            TileStyle::GrassPlain   => material_grass_plain.colour_bg,
-                            TileStyle::GrassCoastal => material_grass_coastal.colour_bg,
-                            TileStyle::Sand         => material_sand.colour_bg,
-                            TileStyle::WaterShallow => material_water_shallow.colour_bg,
-                            TileStyle::WaterDeep    => material_water_deep.colour_bg,
-                        },
-                        match tile.style {
-                            TileStyle::RockHigh     => material_rock_high.colour_fg,
-                            TileStyle::RockLow      => material_rock_low.colour_fg,
-                            TileStyle::Dirt         => material_dirt.colour_fg,
-                            TileStyle::Tree         => material_tree.colour_fg,
-                            TileStyle::GrassPlain   => material_grass_plain.colour_fg,
-                            TileStyle::GrassCoastal => material_grass_coastal.colour_fg,
-                            TileStyle::Sand         => material_sand.colour_fg,
-                            TileStyle::WaterShallow => material_water_shallow.colour_fg,
-                            TileStyle::WaterDeep    => material_water_deep.colour_fg,
-                        },
-                        match tile.style {
-                            TileStyle::RockHigh     => (material_rock_high.char_gen)(tile.rand_offset, rand),
-                            TileStyle::RockLow      => (material_rock_low.char_gen)(tile.rand_offset, rand),
-                            TileStyle::Dirt         => (material_dirt.char_gen)(tile.rand_offset, rand),
-                            TileStyle::Tree         => (material_tree.char_gen)(tile.rand_offset, rand),
-                            TileStyle::GrassPlain   => (material_grass_plain.char_gen)(tile.rand_offset, rand),
-                            TileStyle::GrassCoastal => (material_grass_coastal.char_gen)(tile.rand_offset, rand),
-                            TileStyle::Sand         => (material_sand.char_gen)(tile.rand_offset, rand),
-                            TileStyle::WaterShallow => (material_water_shallow.char_gen)(tile.rand_offset, rand),
-                            TileStyle::WaterDeep    => (material_water_deep.char_gen)(tile.rand_offset, rand),
-                        }
-                    ).unwrap();
+            {
+                let player = player_render.lock().unwrap();
+                let player_coord = view.world_to_view_coord(player.x, player.y);
+                if player_coord.x < VIEW_PADDING as isize {
+                    view.go_west(1);
+                } else if player_coord.x > view.width as isize - VIEW_PADDING as isize {
+                    view.go_east(1);
+                }
+                if player_coord.y < VIEW_PADDING as isize {
+                    view.go_north(1);
+                } else if player_coord.y > view.height as isize - VIEW_PADDING as isize {
+                    view.go_south(1);
                 }
             }
 
-            write!(
-                stdout,
-                "{}{}{}&",
-                cursor::Goto(
-                    (player_coord.x + 1) as u16,
-                    (player_coord.y + 1) as u16
-                ),
-                color::Bg(color::Black),
-                color::Fg(color::White)
-            ).unwrap();
+            {
+                let mut stdout = stdout.lock();
+                let map = map_render.lock().unwrap();
+                for (y, row) in view.get_tile_ranges().iter().enumerate() {
+                    for (x, tile) in map.tiles[row.start..row.end].iter().enumerate() {
+                        write!(
+                            stdout,
+                            "{}{}{}{}",
+                            cursor::Goto(x as u16 + 1, y as u16 + 1),
+                            match tile.style {
+                                TileStyle::RockHigh     => material_rock_high.colour_bg,
+                                TileStyle::RockLow      => material_rock_low.colour_bg,
+                                TileStyle::Dirt         => material_dirt.colour_bg,
+                                TileStyle::Tree         => material_tree.colour_bg,
+                                TileStyle::GrassPlain   => material_grass_plain.colour_bg,
+                                TileStyle::GrassCoastal => material_grass_coastal.colour_bg,
+                                TileStyle::Sand         => material_sand.colour_bg,
+                                TileStyle::WaterShallow => material_water_shallow.colour_bg,
+                                TileStyle::WaterDeep    => material_water_deep.colour_bg,
+                            },
+                            match tile.style {
+                                TileStyle::RockHigh     => material_rock_high.colour_fg,
+                                TileStyle::RockLow      => material_rock_low.colour_fg,
+                                TileStyle::Dirt         => material_dirt.colour_fg,
+                                TileStyle::Tree         => material_tree.colour_fg,
+                                TileStyle::GrassPlain   => material_grass_plain.colour_fg,
+                                TileStyle::GrassCoastal => material_grass_coastal.colour_fg,
+                                TileStyle::Sand         => material_sand.colour_fg,
+                                TileStyle::WaterShallow => material_water_shallow.colour_fg,
+                                TileStyle::WaterDeep    => material_water_deep.colour_fg,
+                            },
+                            match tile.style {
+                                TileStyle::RockHigh     => (material_rock_high.char_gen)(tile.rand_offset, rand),
+                                TileStyle::RockLow      => (material_rock_low.char_gen)(tile.rand_offset, rand),
+                                TileStyle::Dirt         => (material_dirt.char_gen)(tile.rand_offset, rand),
+                                TileStyle::Tree         => (material_tree.char_gen)(tile.rand_offset, rand),
+                                TileStyle::GrassPlain   => (material_grass_plain.char_gen)(tile.rand_offset, rand),
+                                TileStyle::GrassCoastal => (material_grass_coastal.char_gen)(tile.rand_offset, rand),
+                                TileStyle::Sand         => (material_sand.char_gen)(tile.rand_offset, rand),
+                                TileStyle::WaterShallow => (material_water_shallow.char_gen)(tile.rand_offset, rand),
+                                TileStyle::WaterDeep    => (material_water_deep.char_gen)(tile.rand_offset, rand),
+                            }
+                        ).unwrap();
+                    }
+                }
+            }
 
-            stdout.flush().unwrap();
+            {
+                let mut stdout = stdout.lock();
+                let player = player_render.lock().unwrap();
+                // If the view has shifted then this coord will have changed, so get it again.
+                let player_coord = view.world_to_view_coord(player.x, player.y);
+                write!(
+                    stdout,
+                    "{}{}{}&",
+                    cursor::Goto(
+                        (player_coord.x + 1) as u16,
+                        (player_coord.y + 1) as u16
+                    ),
+                    color::Bg(color::Black),
+                    color::Fg(color::White)
+                ).unwrap();
+
+                stdout.flush().unwrap();
+            }
 
         }
     });
