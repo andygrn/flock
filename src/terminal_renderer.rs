@@ -1,11 +1,10 @@
-
 use std;
-use std::io::{Write};
+use std::io::Write;
 use std::cell::RefCell;
 
 use termion::raw::IntoRawMode;
 use termion::raw::RawTerminal;
-use termion::{color, clear, style, cursor};
+use termion::{clear, color, cursor, style};
 
 use tile::TileMap;
 use tile::TileMapView;
@@ -22,11 +21,15 @@ struct TermTileStyle {
 }
 
 impl TermTileStyle {
-    pub fn new(colour_bg: [u8; 3], colour_fg: [u8; 3], char_gen: (fn(f32, f32) -> char)) -> TermTileStyle {
+    pub fn new(
+        colour_bg: [u8; 3],
+        colour_fg: [u8; 3],
+        char_gen: (fn(f32, f32) -> char),
+    ) -> TermTileStyle {
         TermTileStyle {
             colour_bg: color::Bg(color::Rgb(colour_bg[0], colour_bg[1], colour_bg[2])),
             colour_fg: color::Fg(color::Rgb(colour_fg[0], colour_fg[1], colour_fg[2])),
-            char_gen: char_gen
+            char_gen: char_gen,
         }
     }
 }
@@ -102,7 +105,13 @@ impl Renderable for Renderer {
         write!(self.stdout.borrow_mut(), "{}", cursor::Hide).unwrap();
     }
 
-    fn render_frame(&self, ref map: &TileMap, ref map_view: &TileMapView, ref player: &Player, &rand: &f32) {
+    fn render_frame(
+        &self,
+        ref map: &TileMap,
+        ref map_view: &TileMapView,
+        ref player: &Player,
+        &rand: &f32,
+    ) {
         let mut stdout = self.stdout.borrow_mut();
         {
             for (y, row) in map_view.get_tile_ranges().iter().enumerate() {
@@ -124,10 +133,7 @@ impl Renderable for Renderer {
             write!(
                 stdout,
                 "{}{}{}&",
-                cursor::Goto(
-                    (player_coord.x + 1) as u16,
-                    (player_coord.y + 1) as u16
-                ),
+                cursor::Goto((player_coord.x + 1) as u16, (player_coord.y + 1) as u16),
                 color::Bg(color::Black),
                 color::Fg(color::White)
             ).unwrap();

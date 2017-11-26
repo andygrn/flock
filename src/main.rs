@@ -1,6 +1,6 @@
 extern crate noise;
-extern crate termion;
 extern crate rand;
+extern crate termion;
 
 mod tile;
 mod player;
@@ -9,7 +9,7 @@ mod renderable;
 mod terminal_renderer;
 
 use std::{thread, time};
-use std::io::{Read};
+use std::io::Read;
 use std::sync::{mpsc, Arc, Mutex};
 
 use termion::event::Key;
@@ -27,13 +27,17 @@ use renderable::Renderable;
 use terminal_renderer::Renderer;
 
 fn main() {
-
     // Game setup
     let mut stdin = std::io::stdin();
     let map = Arc::new(Mutex::new(flock::generate_tilemap(300, 300)));
     let player = {
         let map = map.lock().unwrap();
-        Arc::new(Mutex::new(Player { x: 0, y: 0, limit_x: map.width - 1, limit_y: map.height - 1 }))
+        Arc::new(Mutex::new(Player {
+            x: 0,
+            y: 0,
+            limit_x: map.width - 1,
+            limit_y: map.height - 1,
+        }))
     };
 
     // Thread control channels
@@ -44,7 +48,6 @@ fn main() {
     let player_render = player.clone();
     let map_render = map.clone();
     thread::spawn(move || {
-
         const VIEW_PADDING: usize = 10;
         let frame_sleep = time::Duration::from_millis(64); // ~15 fps
 
@@ -61,7 +64,6 @@ fn main() {
         renderer.set_up();
 
         loop {
-
             // If message is received from main thread, break the frame loop.
             if rx1.try_recv().is_ok() {
                 break;
@@ -96,7 +98,6 @@ fn main() {
                 let map = map_render.lock().unwrap();
                 renderer.render_frame(&map, &view, &player, &rand);
             }
-
         }
 
         renderer.tear_down();
@@ -106,13 +107,12 @@ fn main() {
     });
 
     'gameloop: loop {
-
         for c in stdin.by_ref().keys() {
             let mut player = player.lock().unwrap();
             match c.unwrap() {
                 Key::Up | Key::Char('w') => {
                     if player.y == 0 {
-                        break
+                        break;
                     }
                     let map = map.lock().unwrap();
                     let target_tile = map.get_tile(player.x, player.y - 1);
@@ -122,10 +122,10 @@ fn main() {
                             _ => {}
                         }
                     }
-                },
+                }
                 Key::Right | Key::Char('d') => {
                     if player.x == player.limit_x {
-                        break
+                        break;
                     }
                     let map = map.lock().unwrap();
                     let target_tile = map.get_tile(player.x + 1, player.y);
@@ -135,10 +135,10 @@ fn main() {
                             _ => {}
                         }
                     }
-                },
+                }
                 Key::Down | Key::Char('s') => {
                     if player.y == player.limit_y {
-                        break
+                        break;
                     }
                     let map = map.lock().unwrap();
                     let target_tile = map.get_tile(player.x, player.y + 1);
@@ -148,10 +148,10 @@ fn main() {
                             _ => {}
                         }
                     }
-                },
+                }
                 Key::Left | Key::Char('a') => {
                     if player.x == 0 {
-                        break
+                        break;
                     }
                     let map = map.lock().unwrap();
                     let target_tile = map.get_tile(player.x - 1, player.y);
@@ -161,17 +161,15 @@ fn main() {
                             _ => {}
                         }
                     }
-                },
+                }
                 _ => break 'gameloop,
             }
             break;
         }
-
     }
 
     // Now gameloop has stopped, tell render thread to tear down...
     tx1.send(()).unwrap();
     // ...then block until render thread sends confirmation.
     rx2.recv().unwrap();
-
 }

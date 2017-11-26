@@ -1,7 +1,6 @@
-
 use rand::{thread_rng, Rng};
 
-use noise::{NoiseModule, Seedable, Perlin, Add, ScaleBias, ScalePoint};
+use noise::{Add, NoiseModule, Perlin, ScaleBias, ScalePoint, Seedable};
 
 use tile::Tile;
 use tile::TileMap;
@@ -13,23 +12,10 @@ fn get_noise_map() -> Add<Perlin, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, A
     let perlin_3 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(4.0).set_y_scale(4.0)).set_scale(0.25);
     let perlin_4 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(8.0).set_y_scale(8.0)).set_scale(0.125);
     let perlin_5 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(16.0).set_y_scale(16.0)).set_scale(0.0625);
-    Add::new(
-        perlin_1,
-        Add::new(
-            perlin_2,
-            Add::new(
-                perlin_3,
-                Add::new(
-                    perlin_4,
-                    perlin_5
-                )
-            )
-        )
-    )
+    Add::new(perlin_1, Add::new(perlin_2, Add::new(perlin_3, Add::new(perlin_4, perlin_5))))
 }
 
 pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
-
     let mut map = TileMap::new(width, height);
 
     let heightmap = get_noise_map();
@@ -44,7 +30,11 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
             x: x,
             y: y,
             style: if tile_height > 0.75 {
-                if rand.next_f32() > (((tile_height - 0.65) / 0.4) * 0.8) { TileStyle::RockLow } else { TileStyle::RockHigh }
+                if rand.next_f32() > (((tile_height - 0.65) / 0.4) * 0.8) {
+                    TileStyle::RockLow
+                } else {
+                    TileStyle::RockHigh
+                }
             } else if tile_height > 0.55 {
                 TileStyle::Dirt
             } else if tile_height > -0.5 {
@@ -54,9 +44,17 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
                 } else {
                     let tile_vegetation = vegetation.get(coord);
                     if tile_vegetation > 0.6 {
-                        if rand.next_f32() > 0.15 { TileStyle::GrassPlain } else { TileStyle::Tree }
+                        if rand.next_f32() > 0.15 {
+                            TileStyle::GrassPlain
+                        } else {
+                            TileStyle::Tree
+                        }
                     } else if tile_vegetation > 0.5 {
-                        if rand.next_f32() > 0.05 { TileStyle::GrassPlain } else { TileStyle::Tree }
+                        if rand.next_f32() > 0.05 {
+                            TileStyle::GrassPlain
+                        } else {
+                            TileStyle::Tree
+                        }
                     } else {
                         TileStyle::GrassCoastal
                     }
@@ -70,10 +68,9 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
             } else {
                 TileStyle::WaterDeep
             },
-            rand_offset: rand.next_f32()
+            rand_offset: rand.next_f32(),
         }
     });
 
     map
-
 }

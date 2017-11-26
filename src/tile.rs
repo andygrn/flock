@@ -1,4 +1,3 @@
-
 use std::ops::Range;
 
 pub enum TileStyle {
@@ -28,7 +27,7 @@ pub struct Tile {
 pub struct TileMap {
     pub width: usize,
     pub height: usize,
-    pub tiles: Vec<Tile>
+    pub tiles: Vec<Tile>,
 }
 
 impl TileMap {
@@ -36,12 +35,14 @@ impl TileMap {
         TileMap {
             width: width,
             height: height,
-            tiles: Vec::new()
+            tiles: Vec::new(),
         }
     }
 
     pub fn fill_tiles<F>(&mut self, factory: F)
-        where F: Fn(usize, usize) -> Tile {
+    where
+        F: Fn(usize, usize) -> Tile,
+    {
         for y in 0..self.height {
             for x in 0..self.width {
                 self.tiles.push(factory(x, y));
@@ -52,7 +53,7 @@ impl TileMap {
     pub fn get_tile(&self, x: usize, y: usize) -> Option<&Tile> {
         let index = (y * self.width) + x;
         if index > self.tiles.len() - 1 {
-            return None
+            return None;
         }
         Some(&self.tiles[index])
     }
@@ -93,30 +94,36 @@ impl TileMapView {
     pub fn world_to_view_coord(&self, x: usize, y: usize) -> Coord {
         let view_x: isize = x as isize - self.x as isize;
         let view_y: isize = y as isize - self.y as isize;
-        Coord{ x: view_x, y: view_y }
+        Coord {
+            x: view_x,
+            y: view_y,
+        }
     }
 
     pub fn go_north(&mut self, steps: usize) {
         if self.y.checked_sub(steps).is_none() {
-            return
+            return;
         }
         self.y -= steps;
     }
+
     pub fn go_east(&mut self, steps: usize) {
         if self.x + steps > self.limit_x {
-            return
+            return;
         }
         self.x += steps;
     }
+
     pub fn go_south(&mut self, steps: usize) {
         if self.y + steps > self.limit_y {
-            return
+            return;
         }
         self.y += 1;
     }
+
     pub fn go_west(&mut self, steps: usize) {
         if self.x.checked_sub(steps).is_none() {
-            return
+            return;
         }
         self.x -= 1;
     }
