@@ -7,46 +7,65 @@ use tile::Tile;
 use tile::TileMap;
 use tile::TileStyle;
 
+fn get_noise_map() -> Add<Perlin, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, ScaleBias<ScalePoint<Perlin, f32>, f32>>>>> {
+    let perlin_1 = Perlin::new().set_seed(thread_rng().next_u32() as usize);
+    let perlin_2 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(2.0).set_y_scale(2.0)).set_scale(0.5);
+    let perlin_3 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(4.0).set_y_scale(4.0)).set_scale(0.25);
+    let perlin_4 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(8.0).set_y_scale(8.0)).set_scale(0.125);
+    let perlin_5 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(16.0).set_y_scale(16.0)).set_scale(0.0625);
+    Add::new(
+        perlin_1,
+        Add::new(
+            perlin_2,
+            Add::new(
+                perlin_3,
+                Add::new(
+                    perlin_4,
+                    perlin_5
+                )
+            )
+        )
+    )
+}
+
 pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
 
     let mut map = TileMap::new(width, height);
 
-    let noise_perlin = Perlin::new().set_seed(thread_rng().next_u32() as usize);
-    let noise_perlin_2 = ScaleBias::new(ScalePoint::new(&noise_perlin).set_x_scale(2.0).set_y_scale(2.0)).set_scale(0.5);
-    let noise_perlin_3 = ScaleBias::new(ScalePoint::new(&noise_perlin).set_x_scale(4.0).set_y_scale(4.0)).set_scale(0.25);
-    let noise_perlin_4 = ScaleBias::new(ScalePoint::new(&noise_perlin).set_x_scale(8.0).set_y_scale(8.0)).set_scale(0.125);
-    let noise_perlin_5 = ScaleBias::new(ScalePoint::new(&noise_perlin).set_x_scale(16.0).set_y_scale(16.0)).set_scale(0.0625);
-    let noise_gen = Add::new(
-        noise_perlin,
-        Add::new(
-            noise_perlin_2,
-            Add::new(
-                noise_perlin_3,
-                Add::new(
-                    noise_perlin_4,
-                    noise_perlin_5
-                )
-            )
-        )
-    );
+    let heightmap = get_noise_map();
+    let terrain = get_noise_map();
+    let vegetation = get_noise_map();
 
     map.fill_tiles(move |x, y| {
         let mut rand = thread_rng();
-        let noise_val = noise_gen.get([x as f32 / 64.0, y as f32 / 64.0]);
+        let coord = [x as f32 / 64.0, y as f32 / 64.0];
+        let tile_height = heightmap.get(coord);
         Tile {
             x: x,
             y: y,
-            style: if noise_val > 0.6 {
-                if rand.next_f32() > (((noise_val - 0.65) / 0.4) * 0.8) { TileStyle::RockLow } else { TileStyle::RockHigh }
-            } else if noise_val > 0.4 {
+            style: if tile_height > 0.5 {
+                if rand.next_f32() > (((tile_height - 0.65) / 0.4) * 0.8) { TileStyle::RockLow } else { TileStyle::RockHigh }
+            } else if tile_height > 0.3 {
                 TileStyle::Dirt
-            } else if noise_val > -0.4 {
-                if rand.next_f32() > 0.05 { TileStyle::GrassPlain } else { TileStyle::Tree }
-            } else if noise_val > -0.6 {
+            } else if tile_height > -0.5 {
+                let tile_terrain = terrain.get(coord);
+                if tile_terrain > 0.5 {
+                    TileStyle::Dirt
+                } else {
+                    let tile_vegetation = vegetation.get(coord);
+                    if tile_vegetation > 0.7 {
+                        if rand.next_f32() > 0.15 { TileStyle::GrassPlain } else { TileStyle::Tree }
+                    } else if tile_vegetation > 0.5 {
+                        if rand.next_f32() > 0.05 { TileStyle::GrassPlain } else { TileStyle::Tree }
+                    } else {
+                        TileStyle::GrassCoastal
+                    }
+                }
+            } else if tile_height > -0.6 {
                 TileStyle::GrassCoastal
-            } else if noise_val > -0.7 {
+            } else if tile_height > -0.7 {
                 TileStyle::Sand
-            } else if noise_val > -0.95 {
+            } else if tile_height > -0.95 {
                 TileStyle::WaterShallow
             } else {
                 TileStyle::WaterDeep

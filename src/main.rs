@@ -59,13 +59,13 @@ fn main() {
             if offset > 0.8 { '~' } else if offset > 0.6 { 'o' } else if offset > 0.4 { '.' } else { ' ' }
         });
         let material_tree = TermTile::new([99, 130, 35], [76, 91, 47], |offset, _rand| {
-            if offset > 0.8 { '*' } else if offset > 0.6 { 'v' } else if offset > 0.4 { ':' } else { 'Y' }
+            if offset > 0.8 { '*' } else if offset > 0.6 { 'V' } else if offset > 0.4 { ':' } else { 'Y' }
         });
         let material_grass_plain = TermTile::new([99, 130, 35], [136, 181, 48], |offset, rand| {
-            if (rand + offset) % 1.0 > 0.7 { ',' } else if (rand + offset) % 1.0 > 0.4 { '.' } else { ' ' }
+            if offset > 0.8 { 'v' } else if offset > 0.7 { ',' } else if offset > 0.4 { '.' } else if offset > 0.05 { ' ' } else if (rand + offset) % 1.0 > 0.9 { ',' } else { '.' }
         });
         let material_grass_coastal = TermTile::new([99, 130, 35], [136, 181, 48], |offset, rand| {
-            if (rand + offset) % 1.0 > 0.9 { '.' } else { ' ' }
+            if offset > 0.9 { ',' } else if offset > 0.75 { '.' } else if offset > 0.05 { ' ' } else if (rand + offset) % 1.0 > 0.9 { ',' } else { '.' }
         });
         let material_sand = TermTile::new([140, 134, 107], [165, 158, 127], |offset, _rand| {
             if offset > 0.8 { '~' } else if offset > 0.6 { '-' } else if offset > 0.4 { '.' } else { ' ' }
