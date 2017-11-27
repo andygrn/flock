@@ -112,32 +112,35 @@ impl Renderable for Renderer {
         ref player: &Player,
         &rand: &f32,
     ) {
-        let mut stdout = self.stdout.borrow_mut();
+        let mut buffer = String::with_capacity(map_view.width * map_view.height * 45);
         {
             for (y, row) in map_view.get_tile_ranges().iter().enumerate() {
                 for (x, tile) in map.tiles[row.start..row.end].iter().enumerate() {
                     let tile_style = self.get_tile_style(&tile.style);
-                    write!(
-                        stdout,
+                    buffer.push_str(&format!(
                         "{}{}{}{}",
                         cursor::Goto(x as u16 + 1, y as u16 + 1),
                         tile_style.colour_bg,
                         tile_style.colour_fg,
                         (tile_style.char_gen)(tile.rand_offset, rand)
-                    ).unwrap();
+                    ));
                 }
             }
         }
         {
             let player_coord = map_view.world_to_view_coord(player.x, player.y);
-            write!(
-                stdout,
+            buffer.push_str(&format!(
                 "{}{}{}&",
                 cursor::Goto((player_coord.x + 1) as u16, (player_coord.y + 1) as u16),
                 color::Bg(color::Black),
                 color::Fg(color::White)
-            ).unwrap();
+            ));
         }
+        let mut stdout = self.stdout.borrow_mut();
+        write!(stdout, "{}", buffer).unwrap();
+        write!(stdout, "{}{}", cursor::Goto(1, 1), buffer.len()).unwrap();
+        write!(stdout, "{}{}", cursor::Goto(8, 1), buffer.capacity()).unwrap();
+        write!(stdout, "{}{},{}", cursor::Goto(15, 1), player.x, player.y).unwrap();
         stdout.flush().unwrap();
     }
 
