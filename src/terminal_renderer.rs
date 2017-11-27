@@ -63,11 +63,11 @@ impl Renderer {
                 }),
                 // grass plain
                 TermTileStyle::new([99, 130, 35], [136, 181, 48], |offset, rand| {
-                    if offset > 0.8 { 'v' } else if offset > 0.7 { ',' } else if offset > 0.4 { '.' } else if offset > 0.05 { ' ' } else if (rand + offset) % 1.0 > 0.9 { ',' } else { '.' }
+                    if offset > 0.8 { 'v' } else if offset > 0.7 { ',' } else if offset > 0.4 { '.' } else if offset > 0.15 { ' ' } else if (rand + offset) % 1.0 > 0.5 { ',' } else { '.' }
                 }),
                 // grass coastal
                 TermTileStyle::new([99, 130, 35], [136, 181, 48], |offset, rand| {
-                    if offset > 0.9 { ',' } else if offset > 0.75 { '.' } else if offset > 0.05 { ' ' } else if (rand + offset) % 1.0 > 0.9 { ',' } else { '.' }
+                    if offset > 0.9 { ',' } else if offset > 0.75 { '.' } else if offset > 0.15 { ' ' } else if (rand + offset) % 1.0 > 0.5 { ',' } else { '.' }
                 }),
                 // sand
                 TermTileStyle::new([140, 134, 107], [165, 158, 127], |offset, _rand| {
