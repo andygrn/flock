@@ -118,7 +118,7 @@ fn main() {
                     let target_tile = map.get_tile(player.x, player.y - 1);
                     if let Some(tile) = target_tile {
                         match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_north(),
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_north(),
                             _ => {}
                         }
                     }
@@ -131,7 +131,7 @@ fn main() {
                     let target_tile = map.get_tile(player.x + 1, player.y);
                     if let Some(tile) = target_tile {
                         match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_east(),
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_east(),
                             _ => {}
                         }
                     }
@@ -144,7 +144,7 @@ fn main() {
                     let target_tile = map.get_tile(player.x, player.y + 1);
                     if let Some(tile) = target_tile {
                         match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_south(),
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_south(),
                             _ => {}
                         }
                     }
@@ -157,7 +157,7 @@ fn main() {
                     let target_tile = map.get_tile(player.x - 1, player.y);
                     if let Some(tile) = target_tile {
                         match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_west(),
+                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_west(),
                             _ => {}
                         }
                     }
