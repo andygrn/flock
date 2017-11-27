@@ -33,8 +33,8 @@ fn main() {
     let player = {
         let map = map.lock().unwrap();
         Arc::new(Mutex::new(Player {
-            x: 0,
-            y: 0,
+            x: map.width / 2,
+            y: map.height / 2,
             limit_x: map.width - 1,
             limit_y: map.height - 1,
         }))
@@ -53,7 +53,8 @@ fn main() {
 
         let mut view = {
             let map = map_render.lock().unwrap();
-            TileMapView::new(&map, 80, 30, 0, 0)
+            let player = player_render.lock().unwrap();
+            TileMapView::new(&map, 80, 40, player.x - 40, player.y - 20)
         };
 
         let renderer = Renderer::new();
