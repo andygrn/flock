@@ -25,7 +25,11 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
     map.fill_tiles(move |x, y| {
         let mut rand = thread_rng();
         let coord = [x as f32 / 64.0, y as f32 / 64.0];
-        let tile_height = heightmap.get(coord);
+        let distance_from_centre = (
+            ((x as isize - (width as isize / 2)) as f32).abs().powi(2) +
+            ((y as isize - (height as isize / 2)) as f32).abs().powi(2)
+        ).sqrt();
+        let tile_height = heightmap.get(coord) - ((distance_from_centre / (width / 2) as f32).powi(4) * 2.0);
         Tile {
             x: x,
             y: y,
