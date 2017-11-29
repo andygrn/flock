@@ -4,6 +4,7 @@ pub enum TileStyle {
     RockHigh,
     RockLow,
     Dirt,
+    DirtFarmed,
     Tree,
     GrassPlain,
     GrassCoastal,

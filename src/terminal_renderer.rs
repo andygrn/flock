@@ -57,6 +57,10 @@ impl Renderer {
                 TermTileStyle::new([71, 56,  19], [122, 97, 33], |offset, _rand| {
                     if offset > 0.8 { '~' } else if offset > 0.6 { 'o' } else if offset > 0.4 { '.' } else { ' ' }
                 }),
+                // dirt farmed
+                TermTileStyle::new([71, 56,  19], [136, 181, 48], |offset, _rand| {
+                    if offset > 0.8 { 'v' } else if offset > 0.5 { '\'' } else if offset > 0.25 { '.' } else { '~' }
+                }),
                 // tree
                 TermTileStyle::new([99, 130, 35], [76, 91, 47], |offset, _rand| {
                     if offset > 0.8 { '*' } else if offset > 0.6 { 'V' } else if offset > 0.4 { ':' } else { 'Y' }
@@ -90,12 +94,13 @@ impl Renderer {
             TileStyle::RockHigh     => &self.tile_styles[0],
             TileStyle::RockLow      => &self.tile_styles[1],
             TileStyle::Dirt         => &self.tile_styles[2],
-            TileStyle::Tree         => &self.tile_styles[3],
-            TileStyle::GrassPlain   => &self.tile_styles[4],
-            TileStyle::GrassCoastal => &self.tile_styles[5],
-            TileStyle::Sand         => &self.tile_styles[6],
-            TileStyle::WaterShallow => &self.tile_styles[7],
-            TileStyle::WaterDeep    => &self.tile_styles[8],
+            TileStyle::DirtFarmed   => &self.tile_styles[3],
+            TileStyle::Tree         => &self.tile_styles[4],
+            TileStyle::GrassPlain   => &self.tile_styles[5],
+            TileStyle::GrassCoastal => &self.tile_styles[6],
+            TileStyle::Sand         => &self.tile_styles[7],
+            TileStyle::WaterShallow => &self.tile_styles[8],
+            TileStyle::WaterDeep    => &self.tile_styles[9],
         }
     }
 }

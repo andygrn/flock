@@ -19,7 +19,7 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
     let mut map = TileMap::new(width, height);
 
     let heightmap = get_noise_map();
-    let terrain = get_noise_map();
+    let farmland = get_noise_map();
     let vegetation = get_noise_map();
 
     map.fill_tiles(move |x, y| {
@@ -42,9 +42,9 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
             } else if tile_height > 0.55 {
                 TileStyle::Dirt
             } else if tile_height > -0.5 {
-                let tile_terrain = terrain.get(coord);
-                if tile_terrain > 0.7 {
-                    TileStyle::Dirt
+                let tile_farmland = farmland.get(coord);
+                if tile_farmland > 0.7 {
+                    TileStyle::DirtFarmed
                 } else {
                     let tile_vegetation = vegetation.get(coord);
                     if tile_vegetation > 0.6 {
