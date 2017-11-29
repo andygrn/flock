@@ -47,13 +47,11 @@ fn main() {
     let player_render = player.clone();
     let map_render = map.clone();
     thread::spawn(move || {
-        const VIEW_PADDING: usize = 10;
         let frame_sleep = time::Duration::from_millis(64); // ~15 fps
 
         let mut view = {
             let map = map_render.lock().unwrap();
-            let player = player_render.lock().unwrap();
-            TileMapView::new(&map, 80, 40, player.x - 40, player.y - 20)
+            TileMapView::new(&map, 80, 40)
         };
 
         let renderer = Renderer::new();
@@ -80,17 +78,7 @@ fn main() {
 
             {
                 let player = player_render.lock().unwrap();
-                let player_coord = view.world_to_view_coord(player.x, player.y);
-                if player_coord.x < VIEW_PADDING as isize {
-                    view.go_west(1);
-                } else if player_coord.x > view.width as isize - VIEW_PADDING as isize {
-                    view.go_east(1);
-                }
-                if player_coord.y < VIEW_PADDING as isize {
-                    view.go_north(1);
-                } else if player_coord.y > view.height as isize - VIEW_PADDING as isize {
-                    view.go_south(1);
-                }
+                view.centre_on_map_point(player.x, player.y);
             }
 
             {

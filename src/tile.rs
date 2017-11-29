@@ -1,4 +1,5 @@
 use std::ops::Range;
+use std::cmp;
 
 pub enum TileStyle {
     RockHigh,
@@ -63,69 +64,61 @@ impl TileMap {
 pub struct TileMapView {
     pub width: usize,
     pub height: usize,
-    pub x: usize,
-    pub y: usize,
+    x: isize,
+    y: isize,
     map_width: usize,
-    limit_x: usize,
-    limit_y: usize,
+    map_height: usize,
 }
 
 impl TileMapView {
-    pub fn new(map: &TileMap, width: usize, height: usize, x: usize, y: usize) -> TileMapView {
+    pub fn new(map: &TileMap, width: usize, height: usize) -> TileMapView {
         TileMapView {
             width: width,
             height: height,
-            x: x,
-            y: y,
+            x: 0,
+            y: 0,
             map_width: map.width,
-            limit_x: map.width - width,
-            limit_y: map.height - height,
+            map_height: map.height,
         }
     }
 
     pub fn get_tile_ranges(&self) -> Vec<Range<usize>> {
         let mut ranges = Vec::new();
-        for y in 0..self.height {
-            let left_i = ((self.y + y) * self.map_width) + self.x;
-            ranges.push(left_i..(left_i + self.width));
+        let x_offset;
+        let y_offset;
+        let rows;
+        let cols;
+        if self.y > 0 {
+            y_offset = self.y;
+            rows = cmp::min(self.height as isize, self.map_height as isize - self.y);
+        } else {
+            y_offset = 0;
+            rows = self.height as isize + self.y;
+        }
+        if self.x > 0 {
+            x_offset = self.x;
+            cols = cmp::min(self.width as isize, self.map_width as isize - self.x);
+        } else {
+            x_offset = 0;
+            cols = self.width as isize + self.x;
+        }
+
+        for y in 0..rows as isize {
+            let left_i = ((y_offset + y) * self.map_width as isize) + x_offset;
+            ranges.push((left_i as usize)..((left_i + cols) as usize));
         }
         ranges
     }
 
     pub fn world_to_view_coord(&self, x: usize, y: usize) -> Coord {
-        let view_x: isize = x as isize - self.x as isize;
-        let view_y: isize = y as isize - self.y as isize;
         Coord {
-            x: view_x,
-            y: view_y,
+            x: (x as isize - self.x),
+            y: (y as isize - self.y),
         }
     }
 
-    pub fn go_north(&mut self, steps: usize) {
-        if self.y.checked_sub(steps).is_none() {
-            return;
-        }
-        self.y -= steps;
-    }
-
-    pub fn go_east(&mut self, steps: usize) {
-        if self.x + steps > self.limit_x {
-            return;
-        }
-        self.x += steps;
-    }
-
-    pub fn go_south(&mut self, steps: usize) {
-        if self.y + steps > self.limit_y {
-            return;
-        }
-        self.y += 1;
-    }
-
-    pub fn go_west(&mut self, steps: usize) {
-        if self.x.checked_sub(steps).is_none() {
-            return;
-        }
-        self.x -= 1;
+    pub fn centre_on_map_point(&mut self, x: usize, y: usize) {
+        self.x = x as isize - (self.width / 2) as isize;
+        self.y = y as isize - (self.height / 2) as isize;
     }
 }

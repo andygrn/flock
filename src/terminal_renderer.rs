@@ -118,13 +118,15 @@ impl Renderable for Renderer {
         &rand: &f32,
     ) {
         let mut buffer = String::with_capacity(map_view.width * map_view.height * 45);
+        buffer.push_str(&format!("{}", clear::All));
         {
-            for (y, row) in map_view.get_tile_ranges().iter().enumerate() {
-                for (x, tile) in map.tiles[row.start..row.end].iter().enumerate() {
+            for row in map_view.get_tile_ranges().iter() {
+                for tile in map.tiles[row.start..row.end].iter() {
                     let tile_style = self.get_tile_style(&tile.style);
+                    let tile_coord = map_view.world_to_view_coord(tile.x, tile.y);
                     buffer.push_str(&format!(
                         "{}{}{}{}",
-                        cursor::Goto(x as u16 + 1, y as u16 + 1),
+                        cursor::Goto(tile_coord.x as u16 + 1, tile_coord.y as u16 + 1),
                         tile_style.colour_bg,
                         tile_style.colour_fg,
                         (tile_style.char_gen)(tile.rand_offset, rand)
