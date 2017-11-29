@@ -17,7 +17,6 @@ use termion::input::TermRead;
 
 use rand::{thread_rng, Rng};
 
-use tile::TileStyle;
 use tile::TileMapView;
 
 use player::Player;
@@ -115,12 +114,9 @@ fn main() {
                     if player.y == 0 {
                         break;
                     }
-                    let map = map.lock().unwrap();
-                    let target_tile = map.get_tile(player.x, player.y - 1);
-                    if let Some(tile) = target_tile {
-                        match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_north(),
-                            _ => {}
+                    if let Some(tile) = map.lock().unwrap().get_tile(player.x, player.y - 1) {
+                        if flock::tile_is_passable(tile) {
+                            player.go_north();
                         }
                     }
                 }
@@ -128,12 +124,9 @@ fn main() {
                     if player.x == player.limit_x {
                         break;
                     }
-                    let map = map.lock().unwrap();
-                    let target_tile = map.get_tile(player.x + 1, player.y);
-                    if let Some(tile) = target_tile {
-                        match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_east(),
-                            _ => {}
+                    if let Some(tile) = map.lock().unwrap().get_tile(player.x + 1, player.y) {
+                        if flock::tile_is_passable(tile) {
+                            player.go_east();
                         }
                     }
                 }
@@ -141,12 +134,9 @@ fn main() {
                     if player.y == player.limit_y {
                         break;
                     }
-                    let map = map.lock().unwrap();
-                    let target_tile = map.get_tile(player.x, player.y + 1);
-                    if let Some(tile) = target_tile {
-                        match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_south(),
-                            _ => {}
+                    if let Some(tile) = map.lock().unwrap().get_tile(player.x, player.y + 1) {
+                        if flock::tile_is_passable(tile) {
+                            player.go_south();
                         }
                     }
                 }
@@ -154,12 +144,9 @@ fn main() {
                     if player.x == 0 {
                         break;
                     }
-                    let map = map.lock().unwrap();
-                    let target_tile = map.get_tile(player.x - 1, player.y);
-                    if let Some(tile) = target_tile {
-                        match tile.style {
-                            TileStyle::RockLow | TileStyle::Dirt | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => player.go_west(),
-                            _ => {}
+                    if let Some(tile) = map.lock().unwrap().get_tile(player.x - 1, player.y) {
+                        if flock::tile_is_passable(tile) {
+                            player.go_west();
                         }
                     }
                 }

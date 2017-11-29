@@ -78,3 +78,10 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
 
     map
 }
+
+pub fn tile_is_passable(tile: &Tile) -> bool {
+    match tile.style {
+        TileStyle::RockLow | TileStyle::Dirt | TileStyle::DirtFarmed | TileStyle::Tree | TileStyle::GrassPlain | TileStyle::GrassCoastal | TileStyle::Sand => true,
+        _ => false
+    }
+}
