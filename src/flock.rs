@@ -48,7 +48,7 @@ pub fn generate_tilemap(width: usize, height: usize) -> TileMap {
                 } else {
                     let tile_vegetation = vegetation.get(coord);
                     if tile_vegetation > 0.6 {
-                        if rand.next_f32() > 0.15 {
+                        if rand.next_f32() > 0.35 {
                             TileStyle::GrassPlain
                         } else {
                             TileStyle::Tree
