@@ -6,7 +6,8 @@ use tile::Tile;
 use tile::TileMap;
 use tile::TileStyle;
 
-fn get_noise_map() -> Add<Perlin, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, Add<ScaleBias<ScalePoint<Perlin, f32>, f32>, ScaleBias<ScalePoint<Perlin, f32>, f32>>>>> {
+type NoiseScaled = ScaleBias<ScalePoint<Perlin, f32>, f32>;
+fn get_noise_map() -> Add<Perlin, Add<NoiseScaled, Add<NoiseScaled, Add<NoiseScaled, NoiseScaled>>>> {
     let perlin_1 = Perlin::new().set_seed(thread_rng().next_u32() as usize);
     let perlin_2 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(2.0).set_y_scale(2.0)).set_scale(0.5);
     let perlin_3 = ScaleBias::new(ScalePoint::new(perlin_1).set_x_scale(4.0).set_y_scale(4.0)).set_scale(0.25);
