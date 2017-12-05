@@ -7,3 +7,5 @@ authors = ["Andy Green <hello@andygrn.co.uk>"]
 termion = "1"
 rand = "0.3"
 noise = "0.4"
+time = "0.1"
+specs = "0.10"

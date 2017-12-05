@@ -1,14 +1,19 @@
 extern crate noise;
 extern crate rand;
 extern crate termion;
+extern crate time;
+extern crate specs;
 
 mod tile;
 mod player;
 mod flock;
 mod renderable;
 mod terminal_renderer;
+mod ecs_entities;
+mod ecs_systems;
 
-use std::{thread, time};
+use std::thread;
+use std::time as stdtime;
 use std::io::Read;
 use std::sync::{mpsc, Arc, Mutex};
 
@@ -17,6 +22,10 @@ use termion::input::TermRead;
 
 use rand::{thread_rng, Rng};
 
+use time::{now, Duration};
+
+use specs::{World, RunNow};
+
 use tile::TileMapView;
 
 use player::Player;
@@ -24,6 +33,10 @@ use player::Player;
 use renderable::Renderable;
 
 use terminal_renderer::Renderer;
+
+use ecs_entities::Utterance;
+
+use ecs_systems::{UtteranceSystem, GameTimeNow};
 
 fn main() {
     // Game setup
@@ -39,6 +52,14 @@ fn main() {
         }))
     };
 
+    // ECS
+    let world = {
+        let mut world = World::new();
+        world.register::<Utterance>();
+        world.add_resource(GameTimeNow(now()));
+        Arc::new(Mutex::new(world))
+    };
+
     // Thread control channels
     let (tx1, rx1) = mpsc::channel();
     let (tx2, rx2) = mpsc::channel();
@@ -46,8 +67,9 @@ fn main() {
     // Spawn render thread
     let player_render = player.clone();
     let map_render = map.clone();
-    thread::spawn(move || {
-        let frame_sleep = time::Duration::from_millis(64); // ~15 fps
+    let world_render = world.clone();
+    thread::Builder::new().name("render".to_string()).spawn(move || {
+        let frame_sleep = stdtime::Duration::from_millis(64); // ~15 fps
 
         let mut view = {
             let map = map_render.lock().unwrap();
@@ -84,7 +106,12 @@ fn main() {
             {
                 let player = player_render.lock().unwrap();
                 let map = map_render.lock().unwrap();
-                renderer.render_frame(&map, &view, &player, &rand);
+                renderer.render_map(&map, &view, &player, &rand);
+            }
+
+            {
+                let world = world_render.lock().unwrap();
+                renderer.render_world(&world);
             }
         }
 
@@ -92,7 +119,24 @@ fn main() {
 
         // Notify main thread that render thread has finished tearing down.
         tx2.send(()).unwrap();
-    });
+    }).unwrap();
+
+    // Spawn system thread
+    let world_ecs = world.clone();
+    thread::Builder::new().name("system".to_string()).spawn(move || {
+        let mut utterance_system = UtteranceSystem;
+        let frame_sleep = stdtime::Duration::from_millis(16); // ~60 fps
+        loop {
+            thread::sleep(frame_sleep);
+            let mut world = world_ecs.lock().unwrap();
+            {
+                let mut delta = world.write_resource::<GameTimeNow>();
+                *delta = GameTimeNow(now());
+            }
+            utterance_system.run_now(&world.res);
+            world.maintain();
+        }
+    }).unwrap();
 
     'gameloop: loop {
         for c in stdin.by_ref().keys() {
@@ -137,6 +181,10 @@ fn main() {
                             player.go_west();
                         }
                     }
+                }
+                Key::Char(' ') => {
+                    let mut world = world.lock().unwrap();
+                    world.create_entity().with(Utterance { text: String::from("Howdy"), dead_at: (now() + Duration::seconds(5)) }).build();
                 }
                 _ => break 'gameloop,
             }

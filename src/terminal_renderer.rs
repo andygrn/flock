@@ -6,6 +6,8 @@ use termion::raw::IntoRawMode;
 use termion::raw::RawTerminal;
 use termion::{clear, color, cursor, style};
 
+use specs::{World, Join};
+
 use tile::TileMap;
 use tile::TileMapView;
 use tile::TileStyle;
@@ -13,6 +15,8 @@ use tile::TileStyle;
 use player::Player;
 
 use renderable::Renderable;
+
+use ecs_entities::Utterance;
 
 struct TermTileStyle {
     pub colour_bg: color::Bg<color::Rgb>,
@@ -110,7 +114,7 @@ impl Renderable for Renderer {
         write!(self.stdout.borrow_mut(), "{}", cursor::Hide).unwrap();
     }
 
-    fn render_frame(
+    fn render_map(
         &self,
         ref map: &TileMap,
         ref map_view: &TileMapView,
@@ -149,6 +153,15 @@ impl Renderable for Renderer {
         write!(stdout, "{}{}", cursor::Goto(8, 1), buffer.capacity()).unwrap();
         write!(stdout, "{}{},{}", cursor::Goto(15, 1), player.x, player.y).unwrap();
         stdout.flush().unwrap();
+    }
+
+    fn render_world(
+        &self,
+        ref world: &World,
+    ) {
+        world.read::<Utterance>().join().for_each(|entity| {
+            println!("Hello, {:?}", entity);
+        });
     }
 
     fn tear_down(&self) {
